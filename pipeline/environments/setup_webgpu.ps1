@@ -15,8 +15,12 @@ Write-Host '========================================'
 Write-Host 'Setting up environment for: webgpu'
 Write-Host '========================================'
 
-# Create virtual environment
-if (-not (Test-Path $ENV_DIR)) {
+# Create virtual environment (check for activation script, not just directory)
+$ActivateScript = "$ENV_DIR\Scripts\Activate.ps1"
+if (-not (Test-Path $ActivateScript)) {
+    if (Test-Path $ENV_DIR) {
+        Remove-Item -Recurse -Force $ENV_DIR
+    }
     & $PYTHON -m venv $ENV_DIR
 }
 
