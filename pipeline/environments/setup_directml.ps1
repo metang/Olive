@@ -34,6 +34,7 @@ pip install --upgrade pip setuptools wheel
 # Install pip packages
 pip install 'olive-ai[directml]'
 pip install 'onnxruntime-directml'
+pip install 'onnxruntime-genai-directml'
 pip install 'torch-directml'
 pip install 'transformers'
 
