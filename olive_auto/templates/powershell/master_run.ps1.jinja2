@@ -1,0 +1,48 @@
+# Master orchestration script for olive-auto
+# Model: {{ model_id }}
+$ErrorActionPreference = 'Stop'
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# Create logs directory
+New-Item -ItemType Directory -Force -Path "$ScriptDir\logs" | Out-Null
+
+Write-Host "========================================"
+Write-Host "olive-auto Pipeline"
+Write-Host "========================================"
+Write-Host "Model: {{ model_id }}"
+Write-Host "Task: {{ task }}"
+Write-Host "Category: {{ category }}"
+Write-Host "Total combinations: {{ total_commands }}"
+Write-Host "========================================"
+
+# Track results
+$Passed = 0
+$Failed = 0
+
+{% for cmd in commands %}
+# {{ cmd.target }} with {{ cmd.precision }}
+Write-Host ""
+Write-Host "[$(Get-Date)] Running: {{ cmd.target }} {{ cmd.precision }}"
+try {
+    & "$ScriptDir\commands\{{ cmd.script_name }}"
+    Write-Host "[PASS] {{ cmd.target }} {{ cmd.precision }}"
+    $Passed++
+} catch {
+    Write-Host "[FAIL] {{ cmd.target }} {{ cmd.precision }}"
+    $Failed++
+}
+
+{% endfor %}
+# Print summary
+Write-Host ""
+Write-Host "========================================"
+Write-Host "Optimization Summary"
+Write-Host "========================================"
+Write-Host "Passed: $Passed"
+Write-Host "Failed: $Failed"
+Write-Host ""
+
+if ($Failed -gt 0) {
+    exit 1
+}

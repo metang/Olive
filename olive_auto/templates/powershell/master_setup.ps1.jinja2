@@ -1,0 +1,20 @@
+# Master setup script for all olive-auto environments
+$ErrorActionPreference = 'Stop'
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+Write-Host "========================================"
+Write-Host "Setting up all olive-auto environments"
+Write-Host "========================================"
+
+{% for target in targets %}
+# Setup {{ target }}
+Write-Host ""
+Write-Host "Setting up {{ target }}..."
+& "$ScriptDir\environments\setup_{{ target }}.ps1"
+
+{% endfor %}
+Write-Host ""
+Write-Host "========================================"
+Write-Host "All environments setup complete!"
+Write-Host "========================================"

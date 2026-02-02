@@ -1,0 +1,45 @@
+# Environment setup for {{ target }}
+$ErrorActionPreference = 'Stop'
+
+$ENV_NAME = "olive_{{ target }}"
+$ENV_DIR = Join-Path $PSScriptRoot $ENV_NAME
+
+Write-Host "========================================"
+Write-Host "Setting up environment for: {{ target }}"
+Write-Host "========================================"
+
+{% if system_requirements %}
+# System requirements
+Write-Host "System requirements:"
+{% for req in system_requirements %}
+Write-Host "  - {{ req }}"
+{% endfor %}
+{% endif %}
+
+# Create virtual environment
+if (-not (Test-Path $ENV_DIR)) {
+    python -m venv $ENV_DIR
+}
+
+# Activate environment
+& "$ENV_DIR\Scripts\Activate.ps1"
+
+# Upgrade pip
+pip install --upgrade pip
+
+{% if pip_packages %}
+# Install pip packages
+{% for pkg in pip_packages %}
+pip install "{{ pkg }}"
+{% endfor %}
+{% endif %}
+
+{% if env_vars %}
+# Set environment variables
+{% for key, value in env_vars.items() %}
+$env:{{ key }} = "{{ value | replace('${', '$env:') | replace('}', '') }}"
+{% endfor %}
+{% endif %}
+
+Write-Host ""
+Write-Host "Environment '{{ target }}' setup complete!"

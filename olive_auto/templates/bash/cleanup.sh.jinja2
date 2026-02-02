@@ -1,0 +1,31 @@
+#!/bin/bash
+# Cleanup script for olive-auto environments
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "Cleaning up olive-auto environments..."
+
+{% for target in targets %}
+# Cleanup {{ target }} environment
+if [ -d "$SCRIPT_DIR/environments/olive_{{ target }}" ]; then
+    echo "Removing olive_{{ target }} environment..."
+    rm -rf "$SCRIPT_DIR/environments/olive_{{ target }}"
+fi
+
+{% endfor %}
+# Cleanup temporary files
+if [ -d "$SCRIPT_DIR/temp" ]; then
+    echo "Removing temporary files..."
+    rm -rf "$SCRIPT_DIR/temp"
+fi
+
+# Optional: Cleanup output models
+read -p "Remove output models? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf "$SCRIPT_DIR/outputs"
+    echo "Output models removed."
+fi
+
+echo "Cleanup complete!"

@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "olive-auto"
+version = "0.1.0"
+description = "Batch optimization pipeline generator for Olive"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "huggingface_hub>=0.20.0",
+    "jinja2>=3.0.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+full = [
+    "olive-ai>=0.7.0",
+    "optimum>=1.17.0",
+    "transformers>=4.36.0",
+]
+cpu = ["onnxruntime>=1.16.0"]
+cuda = ["onnxruntime-gpu>=1.16.0", "bitsandbytes>=0.41.0"]
+openvino = ["openvino>=2024.0", "optimum-intel>=1.14.0"]
+directml = ["onnxruntime-directml>=1.16.0"]
+
+[project.scripts]
+olive-auto = "olive_auto.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/microsoft/Olive"
+Documentation = "https://microsoft.github.io/Olive/"
+Repository = "https://github.com/microsoft/Olive"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["olive_auto*"]
+
+[tool.setuptools.package-data]
+olive_auto = ["templates/**/*.jinja2"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "e2e: marks tests as end-to-end (deselect with '-m \"not e2e\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]

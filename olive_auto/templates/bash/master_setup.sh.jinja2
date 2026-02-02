@@ -1,0 +1,21 @@
+#!/bin/bash
+# Master setup script for all olive-auto environments
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "========================================"
+echo "Setting up all olive-auto environments"
+echo "========================================"
+
+{% for target in targets %}
+# Setup {{ target }}
+echo ""
+echo "Setting up {{ target }}..."
+"$SCRIPT_DIR/environments/setup_{{ target }}.sh"
+
+{% endfor %}
+echo ""
+echo "========================================"
+echo "All environments setup complete!"
+echo "========================================"

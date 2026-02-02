@@ -1,0 +1,27 @@
+# Optimization: {{ target }} with {{ precision }} precision
+# Model: {{ model_id }}
+$ErrorActionPreference = 'Stop'
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$LogFile = Join-Path $ScriptDir "..\logs\{{ target }}_{{ precision }}.log"
+
+Write-Host "========================================"
+Write-Host "Target: {{ target }}"
+Write-Host "Precision: {{ precision }}"
+Write-Host "Model: {{ model_id }}"
+Write-Host "========================================"
+
+# Activate environment
+& "$ScriptDir\..\environments\olive_{{ target }}\Scripts\Activate.ps1"
+
+# Create output directory
+New-Item -ItemType Directory -Force -Path "{{ output_dir }}" | Out-Null
+
+Write-Host "Starting optimization..."
+Write-Host "Log file: $LogFile"
+
+# Run optimization
+{{ olive_command }} 2>&1 | Tee-Object -FilePath $LogFile
+
+Write-Host ""
+Write-Host "Optimization complete: {{ target }} {{ precision }}"

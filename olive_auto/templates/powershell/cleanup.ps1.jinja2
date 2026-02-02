@@ -1,0 +1,34 @@
+# Cleanup script for olive-auto environments
+$ErrorActionPreference = 'Stop'
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+Write-Host "Cleaning up olive-auto environments..."
+
+{% for target in targets %}
+# Cleanup {{ target }} environment
+$envPath = Join-Path $ScriptDir "environments\olive_{{ target }}"
+if (Test-Path $envPath) {
+    Write-Host "Removing olive_{{ target }} environment..."
+    Remove-Item -Recurse -Force $envPath
+}
+
+{% endfor %}
+# Cleanup temporary files
+$tempPath = Join-Path $ScriptDir "temp"
+if (Test-Path $tempPath) {
+    Write-Host "Removing temporary files..."
+    Remove-Item -Recurse -Force $tempPath
+}
+
+# Optional: Cleanup output models
+$response = Read-Host "Remove output models? (y/N)"
+if ($response -eq 'y' -or $response -eq 'Y') {
+    $outputPath = Join-Path $ScriptDir "outputs"
+    if (Test-Path $outputPath) {
+        Remove-Item -Recurse -Force $outputPath
+        Write-Host "Output models removed."
+    }
+}
+
+Write-Host "Cleanup complete!"

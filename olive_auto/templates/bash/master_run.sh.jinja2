@@ -1,0 +1,48 @@
+#!/bin/bash
+# Master orchestration script for olive-auto
+# Model: {{ model_id }}
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Create logs directory
+mkdir -p "$SCRIPT_DIR/logs"
+
+echo "========================================"
+echo "olive-auto Pipeline"
+echo "========================================"
+echo "Model: {{ model_id }}"
+echo "Task: {{ task }}"
+echo "Category: {{ category }}"
+echo "Total combinations: {{ total_commands }}"
+echo "========================================"
+
+# Track results
+PASSED=0
+FAILED=0
+
+{% for cmd in commands %}
+# {{ cmd.target }} with {{ cmd.precision }}
+echo ""
+echo "[$(date)] Running: {{ cmd.target }} {{ cmd.precision }}"
+if "$SCRIPT_DIR/commands/{{ cmd.script_name }}"; then
+    echo "[PASS] {{ cmd.target }} {{ cmd.precision }}"
+    ((PASSED++))
+else
+    echo "[FAIL] {{ cmd.target }} {{ cmd.precision }}"
+    ((FAILED++))
+fi
+
+{% endfor %}
+# Print summary
+echo ""
+echo "========================================"
+echo "Optimization Summary"
+echo "========================================"
+echo "Passed: $PASSED"
+echo "Failed: $FAILED"
+echo ""
+
+if [ $FAILED -gt 0 ]; then
+    exit 1
+fi

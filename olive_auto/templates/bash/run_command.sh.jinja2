@@ -1,0 +1,28 @@
+#!/bin/bash
+# Optimization: {{ target }} with {{ precision }} precision
+# Model: {{ model_id }}
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_FILE="$SCRIPT_DIR/../logs/{{ target }}_{{ precision }}.log"
+
+echo "========================================"
+echo "Target: {{ target }}"
+echo "Precision: {{ precision }}"
+echo "Model: {{ model_id }}"
+echo "========================================"
+
+# Activate environment
+source "$SCRIPT_DIR/../environments/olive_{{ target }}/bin/activate"
+
+# Create output directory
+mkdir -p "{{ output_dir }}"
+
+echo "Starting optimization..."
+echo "Log file: $LOG_FILE"
+
+# Run optimization
+{{ olive_command }} 2>&1 | tee "$LOG_FILE"
+
+echo ""
+echo "Optimization complete: {{ target }} {{ precision }}"

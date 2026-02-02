@@ -1,0 +1,59 @@
+#!/bin/bash
+# Environment setup for {{ target }}
+set -e
+
+ENV_NAME="olive_{{ target }}"
+ENV_DIR="$(dirname $0)/$ENV_NAME"
+
+echo "========================================"
+echo "Setting up environment for: {{ target }}"
+echo "========================================"
+
+{% if system_requirements %}
+# System requirements
+echo "System requirements:"
+{% for req in system_requirements %}
+echo "  - {{ req }}"
+{% endfor %}
+{% endif %}
+
+{% if pre_install_script %}
+# Pre-install checks
+{{ pre_install_script }}
+{% endif %}
+
+# Create virtual environment
+if [ ! -d "$ENV_DIR" ]; then
+    python3 -m venv "$ENV_DIR"
+fi
+
+# Activate environment
+source "$ENV_DIR/bin/activate"
+
+# Upgrade pip
+pip install --upgrade pip
+
+{% if pip_packages %}
+# Install pip packages
+{% for pkg in pip_packages %}
+pip install "{{ pkg }}"
+{% endfor %}
+{% endif %}
+
+{% if env_vars %}
+# Set environment variables
+cat >> "$ENV_DIR/bin/activate" << 'ENVVARS'
+{% for key, value in env_vars.items() %}
+export {{ key }}="{{ value }}"
+{% endfor %}
+ENVVARS
+{% endif %}
+
+{% if post_install_script %}
+# Post-install setup
+{{ post_install_script }}
+{% endif %}
+
+echo ""
+echo "Environment '{{ target }}' setup complete!"
+echo "Activate with: source $ENV_DIR/bin/activate"
