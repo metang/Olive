@@ -52,9 +52,9 @@ Homepage = "https://github.com/microsoft/Olive"
 Documentation = "https://microsoft.github.io/Olive/"
 Repository = "https://github.com/microsoft/Olive"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["olive_auto*"]
+[tool.setuptools]
+packages = ["olive_auto"]
+package-dir = {"olive_auto" = "."}
 
 [tool.setuptools.package-data]
 olive_auto = ["templates/**/*.jinja2"]

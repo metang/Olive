@@ -6,16 +6,76 @@ Generate complete optimization pipelines for HuggingFace models across all suppo
 
 ## Installation
 
+### Prerequisites
+
+- Python 3.9 or later
+- pip (Python package installer)
+- Git (to clone the repository)
+
+### Setup for New Users
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/microsoft/Olive.git
+   cd Olive
+   ```
+
+2. **Install olive-auto:**
+
+   ```bash
+   pip install -e ./olive_auto
+   ```
+
+3. **Verify installation:**
+
+   ```bash
+   olive-auto --version
+   ```
+
+### Optional Dependencies
+
+Install additional dependencies based on your target hardware:
+
 ```bash
-# Install from source
-cd olive_auto
-pip install -e .
+# Full dependencies (includes Olive, Optimum, Transformers)
+pip install -e "./olive_auto[full]"
 
-# Install with full dependencies (including olive)
-pip install -e ".[full]"
+# CPU inference only
+pip install -e "./olive_auto[cpu]"
 
-# Install with development dependencies
-pip install -e ".[dev]"
+# NVIDIA GPU (CUDA)
+pip install -e "./olive_auto[cuda]"
+
+# Intel OpenVINO
+pip install -e "./olive_auto[openvino]"
+
+# Windows DirectML
+pip install -e "./olive_auto[directml]"
+
+# Development dependencies (pytest, ruff, mypy)
+pip install -e "./olive_auto[dev]"
+```
+
+### Virtual Environment (Recommended)
+
+It's recommended to use a virtual environment:
+
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+
+# Linux/macOS
+source .venv/bin/activate
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# Windows CMD
+.venv\Scripts\activate.bat
+
+# Then install olive-auto
+pip install -e ./olive_auto
 ```
 
 ## Quick Start
