@@ -29,6 +29,7 @@ pip install --upgrade pip setuptools wheel
 # Install pip packages
 pip install 'olive-ai'
 pip install 'onnxruntime-web'
+pip install 'onnxruntime-genai'
 pip install 'transformers'
 
 Write-Host ''

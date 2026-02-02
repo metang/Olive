@@ -35,6 +35,7 @@ pip install 'olive-ai[openvino]'
 pip install 'openvino'
 pip install 'openvino-dev'
 pip install 'optimum[openvino]'
+pip install 'onnxruntime-genai'
 pip install 'transformers'
 
 # Set environment variables

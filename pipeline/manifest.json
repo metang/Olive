@@ -1,0 +1,61 @@
+{
+  "model_id": "microsoft/phi-2",
+  "task": "text-generation-with-past",
+  "category": "nlp",
+  "targets": [
+    "cpu",
+    "cuda",
+    "qnn",
+    "openvino",
+    "vitisai",
+    "webgpu",
+    "tensorrt",
+    "directml",
+    "rocm"
+  ],
+  "precisions": {
+    "cpu": [
+      "fp32",
+      "fp16",
+      "int4"
+    ],
+    "cuda": [
+      "fp32",
+      "fp16",
+      "bf16",
+      "int4"
+    ],
+    "qnn": [
+      "fp16",
+      "int4"
+    ],
+    "openvino": [
+      "fp32",
+      "fp16",
+      "int4"
+    ],
+    "vitisai": [
+      "fp32",
+      "int4"
+    ],
+    "webgpu": [
+      "fp32",
+      "fp16",
+      "int4"
+    ],
+    "tensorrt": [
+      "fp32",
+      "fp16"
+    ],
+    "directml": [
+      "fp32",
+      "fp16"
+    ],
+    "rocm": [
+      "fp32",
+      "fp16"
+    ]
+  },
+  "generated_by": "olive-auto",
+  "version": "0.1.0"
+}

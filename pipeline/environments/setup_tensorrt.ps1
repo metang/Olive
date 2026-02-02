@@ -34,6 +34,7 @@ pip install --upgrade pip setuptools wheel
 # Install pip packages
 pip install 'olive-ai'
 pip install 'onnxruntime-gpu'
+pip install 'onnxruntime-genai-cuda'
 pip install 'tensorrt'
 pip install 'transformers'
 pip install 'torch'

@@ -34,6 +34,7 @@ pip install --upgrade pip setuptools wheel
 # Install pip packages
 pip install 'olive-ai'
 pip install 'torch-rocm'
+pip install 'onnxruntime-genai'
 pip install 'transformers'
 
 # Set environment variables

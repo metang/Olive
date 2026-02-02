@@ -37,7 +37,7 @@ Write-Host '========================================'
 Write-Host 'Model: microsoft/phi-2'
 Write-Host 'Task: text-generation-with-past'
 Write-Host 'Category: nlp'
-Write-Host 'Total combinations: 30'
+Write-Host 'Total combinations: 22'
 Write-Host '========================================'
 
 # Track results
@@ -65,18 +65,6 @@ try {
     $Passed++
 } catch {
     Write-Host '[FAIL] cpu fp16'
-    $Failed++
-}
-
-# cpu with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: cpu int8"
-try {
-    & "$ScriptDir\commands\cpu_int8.ps1"
-    Write-Host '[PASS] cpu int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] cpu int8'
     $Failed++
 }
 
@@ -128,18 +116,6 @@ try {
     $Failed++
 }
 
-# cuda with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: cuda int8"
-try {
-    & "$ScriptDir\commands\cuda_int8.ps1"
-    Write-Host '[PASS] cuda int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] cuda int8'
-    $Failed++
-}
-
 # cuda with int4
 Write-Host ''
 Write-Host "[$(Get-Date)] Running: cuda int4"
@@ -152,18 +128,6 @@ try {
     $Failed++
 }
 
-# cuda with bnb4
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: cuda bnb4"
-try {
-    & "$ScriptDir\commands\cuda_bnb4.ps1"
-    Write-Host '[PASS] cuda bnb4'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] cuda bnb4'
-    $Failed++
-}
-
 # qnn with fp16
 Write-Host ''
 Write-Host "[$(Get-Date)] Running: qnn fp16"
@@ -173,18 +137,6 @@ try {
     $Passed++
 } catch {
     Write-Host '[FAIL] qnn fp16'
-    $Failed++
-}
-
-# qnn with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: qnn int8"
-try {
-    & "$ScriptDir\commands\qnn_int8.ps1"
-    Write-Host '[PASS] qnn int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] qnn int8'
     $Failed++
 }
 
@@ -224,18 +176,6 @@ try {
     $Failed++
 }
 
-# openvino with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: openvino int8"
-try {
-    & "$ScriptDir\commands\openvino_int8.ps1"
-    Write-Host '[PASS] openvino int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] openvino int8'
-    $Failed++
-}
-
 # openvino with int4
 Write-Host ''
 Write-Host "[$(Get-Date)] Running: openvino int4"
@@ -260,15 +200,15 @@ try {
     $Failed++
 }
 
-# vitisai with int8
+# vitisai with int4
 Write-Host ''
-Write-Host "[$(Get-Date)] Running: vitisai int8"
+Write-Host "[$(Get-Date)] Running: vitisai int4"
 try {
-    & "$ScriptDir\commands\vitisai_int8.ps1"
-    Write-Host '[PASS] vitisai int8'
+    & "$ScriptDir\commands\vitisai_int4.ps1"
+    Write-Host '[PASS] vitisai int4'
     $Passed++
 } catch {
-    Write-Host '[FAIL] vitisai int8'
+    Write-Host '[FAIL] vitisai int4'
     $Failed++
 }
 
@@ -332,18 +272,6 @@ try {
     $Failed++
 }
 
-# tensorrt with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: tensorrt int8"
-try {
-    & "$ScriptDir\commands\tensorrt_int8.ps1"
-    Write-Host '[PASS] tensorrt int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] tensorrt int8'
-    $Failed++
-}
-
 # directml with fp32
 Write-Host ''
 Write-Host "[$(Get-Date)] Running: directml fp32"
@@ -389,18 +317,6 @@ try {
     $Passed++
 } catch {
     Write-Host '[FAIL] rocm fp16'
-    $Failed++
-}
-
-# rocm with int8
-Write-Host ''
-Write-Host "[$(Get-Date)] Running: rocm int8"
-try {
-    & "$ScriptDir\commands\rocm_int8.ps1"
-    Write-Host '[PASS] rocm int8'
-    $Passed++
-} catch {
-    Write-Host '[FAIL] rocm int8'
     $Failed++
 }
 

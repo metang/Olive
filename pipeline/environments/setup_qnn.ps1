@@ -33,6 +33,7 @@ pip install --upgrade pip setuptools wheel
 # Install pip packages
 pip install 'olive-ai[qualcomm]'
 pip install 'onnxruntime-qnn'
+pip install 'onnxruntime-genai'
 pip install 'transformers'
 
 # Set environment variables

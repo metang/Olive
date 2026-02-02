@@ -1,0 +1,8 @@
+# Virtual environments
+environments/olive_*/
+
+# Logs
+logs/
+
+# Outputs
+outputs/
