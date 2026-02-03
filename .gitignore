@@ -160,3 +160,9 @@ cython_debug/
 
 # AzureML
 .azureml
+
+# Claude Code
+.claude/
+
+# olive-auto generated pipelines
+olive_auto_pipeline/
