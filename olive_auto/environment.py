@@ -30,6 +30,7 @@ ENVIRONMENT_CONFIGS: Dict[str, EnvironmentConfig] = {
         pip_packages=[
             "olive-ai",
             "onnxruntime",
+            "onnxruntime-genai",
             "transformers",
             "torch",
         ],
@@ -40,6 +41,7 @@ ENVIRONMENT_CONFIGS: Dict[str, EnvironmentConfig] = {
         pip_packages=[
             "olive-ai[gpu]",
             "onnxruntime-gpu",
+            "onnxruntime-genai-cuda",
             "transformers",
             "torch",
             "bitsandbytes",
@@ -148,6 +150,7 @@ fi
         pip_packages=[
             "olive-ai[directml]",
             "onnxruntime-directml",
+            "onnxruntime-genai-directml",
             "torch-directml",
             "transformers",
         ],

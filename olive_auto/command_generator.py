@@ -154,14 +154,20 @@ class CommandGenerator:
         script_name = f"{cmd.target}_{cmd.precision}.sh"
         script_path = self.commands_dir / script_name
 
+        # Convert to absolute paths
+        output_dir_abs = str(cmd.output_dir.resolve())
+        log_dir_abs = str((self.output_dir / "logs").resolve())
+        env_dir_abs = str((self.output_dir / "environments" / f"olive_{cmd.target}").resolve())
+
         lines = [
             "#!/bin/bash",
             f"# Optimization: {cmd.target} with {cmd.precision} precision",
             f"# Model: {cmd.model_id}",
             "set -e",
             "",
-            'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
-            f'LOG_FILE="$SCRIPT_DIR/../logs/{cmd.target}_{cmd.precision}.log"',
+            f'LOG_FILE="{log_dir_abs}/{cmd.target}_{cmd.precision}.log"',
+            f'OUTPUT_DIR="{output_dir_abs}"',
+            f'ENV_DIR="{env_dir_abs}"',
             "",
             'echo "========================================"',
             f'echo "Target: {cmd.target}"',
@@ -169,17 +175,36 @@ class CommandGenerator:
             f'echo "Model: {cmd.model_id}"',
             'echo "========================================"',
             "",
+            "# Ensure log directory exists",
+            'mkdir -p "$(dirname "$LOG_FILE")"',
+            "",
             "# Activate environment",
-            f'source "$SCRIPT_DIR/../environments/olive_{cmd.target}/bin/activate"',
+            'source "$ENV_DIR/bin/activate"',
             "",
             "# Create output directory",
-            f'mkdir -p "{cmd.output_dir}"',
+            'mkdir -p "$OUTPUT_DIR"',
             "",
             'echo "Starting optimization..."',
             'echo "Log file: $LOG_FILE"',
+            'echo "Output dir: $OUTPUT_DIR"',
             "",
-            "# Run optimization",
+            "# Run optimization with better error capture",
+            "{",
             f'{cmd.to_olive_command()} 2>&1 | tee "$LOG_FILE"',
+            'OUTPUT_STATUS="${PIPESTATUS[0]}"',
+            "",
+            "    # Check if output was produced",
+            '    if [ "$(find "$OUTPUT_DIR" -type f 2>/dev/null | wc -l)" -eq 0 ]; then',
+            '        echo "WARNING: No output files produced by optimization. Check log for details."',
+            "    else",
+            '        echo "Successfully produced $(find "$OUTPUT_DIR" -type f 2>/dev/null | wc -l) output file(s)"',
+            "    fi",
+            "",
+            "    if [ $OUTPUT_STATUS -ne 0 ]; then",
+            '        echo "ERROR: Optimization failed with status code $OUTPUT_STATUS"',
+            "        exit $OUTPUT_STATUS",
+            "    fi",
+            "}",
             "",
             'echo ""',
             f'echo "Optimization complete: {cmd.target} {cmd.precision}"',
@@ -191,10 +216,16 @@ class CommandGenerator:
 
         return script_path
 
+
     def _generate_powershell_script(self, cmd: OptimizationCommand) -> Path:
         """Generate PowerShell script for a single command."""
         script_name = f"{cmd.target}_{cmd.precision}.ps1"
         script_path = self.commands_dir / script_name
+
+        # Convert to absolute paths
+        output_dir_abs = str(cmd.output_dir.resolve())
+        log_dir_abs = str((self.output_dir / "logs").resolve())
+        env_dir_abs = str((self.output_dir / "environments" / f"olive_{cmd.target}").resolve())
 
         lines = [
             f"# Optimization: {cmd.target} with {cmd.precision} precision",
@@ -202,7 +233,9 @@ class CommandGenerator:
             "$ErrorActionPreference = 'Stop'",
             "",
             "$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path",
-            f'$LogFile = Join-Path $ScriptDir "..\\logs\\{cmd.target}_{cmd.precision}.log"',
+            f'$LogFile = "{log_dir_abs}\\{cmd.target}_{cmd.precision}.log"',
+            f'$OutputDir = "{output_dir_abs}"',
+            f'$EnvDir = "{env_dir_abs}"',
             "",
             "Write-Host '========================================'",
             f"Write-Host 'Target: {cmd.target}'",
@@ -210,17 +243,39 @@ class CommandGenerator:
             f"Write-Host 'Model: {cmd.model_id}'",
             "Write-Host '========================================'",
             "",
+            "# Ensure log directory exists",
+            'New-Item -ItemType Directory -Force -Path (Split-Path $LogFile) | Out-Null',
+            "",
             "# Activate environment",
-            f'& "$ScriptDir\\..\\environments\\olive_{cmd.target}\\Scripts\\Activate.ps1"',
+            f'& "$EnvDir\\Scripts\\Activate.ps1"',
             "",
             "# Create output directory",
-            f'New-Item -ItemType Directory -Force -Path "{cmd.output_dir}" | Out-Null',
+            'New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null',
             "",
             "Write-Host 'Starting optimization...'",
             "Write-Host \"Log file: $LogFile\"",
+            "Write-Host \"Output dir: $OutputDir\"",
             "",
-            "# Run optimization",
-            f'{cmd.to_olive_command_windows()} 2>&1 | Tee-Object -FilePath $LogFile',
+            "# Run optimization with better error capture",
+            "try {",
+            f'    olive optimize `',
+            f'        -m "{cmd.model_id}" `',
+            f'        --task {cmd.task} `',
+            f'        --provider {cmd._get_provider()} `',
+            f'        --precision {cmd.precision} `',
+            f'        -o $OutputDir 2>&1 | Tee-Object -FilePath $LogFile',
+            "    ",
+            "    # Check if output was produced",
+            "    $outputFiles = @(Get-ChildItem -Path $OutputDir -File -Recurse -ErrorAction SilentlyContinue)",
+            "    if ($outputFiles.Count -eq 0) {",
+            "        Write-Host 'WARNING: No output files produced by optimization. Check log for details.'",
+            "    } else {",
+            "        Write-Host \"Successfully produced $($outputFiles.Count) output file(s)\"",
+            "    }",
+            "} catch {",
+            "    Write-Host \"ERROR: Optimization failed with exception: $_\"",
+            "    throw",
+            "}",
             "",
             "Write-Host ''",
             f"Write-Host 'Optimization complete: {cmd.target} {cmd.precision}'",
