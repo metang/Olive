@@ -37,7 +37,7 @@ class TestTargetPrecisionMatrix:
         """Test CPU target configuration."""
         cpu = TARGET_PRECISION_MATRIX["cpu"]
         assert "fp32" in cpu["precisions"]
-        assert "int8" in cpu["precisions"]
+        assert "int4" in cpu["precisions"]
         assert cpu["device"] == "cpu"
 
     def test_cuda_target(self):

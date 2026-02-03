@@ -38,6 +38,34 @@ console = Console()
 logger = logging.getLogger(__name__)
 
 
+def _validate_model_exists(model: str) -> None:
+    """Validate that the model exists locally or on HuggingFace Hub."""
+    model_path = Path(model).expanduser()
+    if model_path.exists():
+        return
+
+    if model_path.anchor or model.startswith(".") or model.startswith("~"):
+        console.print(f"[red]Error: Local model path not found: {model}[/red]")
+        raise typer.Exit(1)
+
+    try:
+        from huggingface_hub import model_info
+        from huggingface_hub.utils import HFValidationError, RepositoryNotFoundError
+
+        model_info(model)
+    except ImportError:
+        console.print(
+            "[yellow]Warning: huggingface_hub not installed; skipping model existence check.[/yellow]"
+        )
+    except (RepositoryNotFoundError, HFValidationError):
+        console.print(f"[red]Error: Model not found on HuggingFace Hub: {model}[/red]")
+        raise typer.Exit(1)
+    except Exception as exc:
+        console.print(
+            f"[yellow]Warning: Unable to verify model existence ({exc}). Continuing.[/yellow]"
+        )
+
+
 def version_callback(value: bool):
     """Show version and exit."""
     if value:
@@ -166,6 +194,7 @@ def main(
     ) as progress:
         # Step 1: Analyze model
         task_id = progress.add_task("Analyzing model...", total=None)
+        _validate_model_exists(model)
         detected_task, category = detect_model_info(
             model,
             user_task=task,
@@ -179,8 +208,8 @@ def main(
         # Test mode: override to CPU only with fp32/fp16
         if test:
             selected_targets = ["cpu"]
-            target_precisions = {"cpu": ["fp32", "fp16"]}
-            console.print("[yellow]Test mode: CPU target with fp32/fp16 only[/yellow]")
+            target_precisions = {"cpu": ["fp16", "int4"]}
+            console.print("[yellow]Test mode: CPU target with fp16/int4 only[/yellow]")
         else:
             selected_targets = _get_targets(category, targets, exclude_targets)
 

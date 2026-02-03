@@ -230,7 +230,7 @@ class CommandGenerator:
         lines = [
             f"# Optimization: {cmd.target} with {cmd.precision} precision",
             f"# Model: {cmd.model_id}",
-            "$ErrorActionPreference = 'Stop'",
+            "$ErrorActionPreference = 'Continue'",
             "",
             "$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path",
             f'$LogFile = "{log_dir_abs}\\{cmd.target}_{cmd.precision}.log"',

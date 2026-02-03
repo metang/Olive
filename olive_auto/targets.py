@@ -19,8 +19,8 @@ TARGET_PROVIDER_MAP = {
 # Target-precision compatibility matrix
 TARGET_PRECISION_MATRIX: Dict[str, Dict] = {
     "cpu": {
-        "precisions": ["fp32", "fp16", "int8", "int4"],
-        "default": "int8",
+        "precisions": ["fp32", "fp16", "int4"],
+        "default": "fp16",
         "olive_extra": None,
         "system_requirements": [],
         "device": "cpu",

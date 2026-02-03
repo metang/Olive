@@ -33,6 +33,8 @@ ENVIRONMENT_CONFIGS: Dict[str, EnvironmentConfig] = {
             "onnxruntime-genai",
             "transformers",
             "torch",
+            "tabulate",
+            "datasets",
         ],
     ),
     "cuda": EnvironmentConfig(
@@ -45,6 +47,7 @@ ENVIRONMENT_CONFIGS: Dict[str, EnvironmentConfig] = {
             "transformers",
             "torch",
             "bitsandbytes",
+            "tabulate",
         ],
         env_vars={
             "CUDA_HOME": "/usr/local/cuda",
