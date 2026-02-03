@@ -283,6 +283,12 @@ def _get_targets(
         invalid = [t for t in user_targets if t not in TARGET_PRECISION_MATRIX]
         if invalid:
             console.print(f"[yellow]Warning: Unknown targets ignored: {invalid}[/yellow]")
+        
+        # Check for targets that are valid but incompatible with this model category
+        valid_but_incompatible = [t for t in user_targets if t in TARGET_PRECISION_MATRIX and t not in compatible]
+        if valid_but_incompatible:
+            console.print(f"[yellow]Warning: Targets not compatible with {category} models (skipped): {valid_but_incompatible}[/yellow]")
+        
         targets = [t for t in user_targets if t in compatible]
     else:
         targets = list(compatible)
@@ -302,9 +308,16 @@ def _get_precisions(
     for target in targets:
         available = TARGET_PRECISION_MATRIX[target]["precisions"]
         if user_precisions:
-            result[target] = [p for p in user_precisions if p in available]
-            if not result[target]:
-                result[target] = available  # Fallback to all if none match
+            matched = [p for p in user_precisions if p in available]
+            if not matched:
+                console.print(f"[yellow]Warning: No specified precisions compatible with target '{target}'. Available: {', '.join(available)}. Using all available precisions.[/yellow]")
+                result[target] = available
+            else:
+                # Check if any specified precisions were skipped
+                skipped = [p for p in user_precisions if p not in available]
+                if skipped:
+                    console.print(f"[yellow]Warning: Precisions not supported by target '{target}' (skipped): {skipped}[/yellow]")
+                result[target] = matched
         else:
             result[target] = available
     return result
