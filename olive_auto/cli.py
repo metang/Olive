@@ -110,6 +110,11 @@ def main(
         "--dry-run",
         help="Show what would be generated without creating files",
     ),
+    test: bool = typer.Option(
+        False,
+        "--test",
+        help="Test mode: generate only CPU target with fp32/fp16 precisions",
+    ),
     # Misc options
     verbose: bool = typer.Option(
         False,
@@ -170,16 +175,23 @@ def main(
 
         # Step 2: Determine targets
         progress.add_task("Selecting targets...", total=None)
-        selected_targets = _get_targets(category, targets, exclude_targets)
 
-        if not selected_targets:
-            console.print(
-                "[red]Error: No compatible targets found for this model category.[/red]"
-            )
-            raise typer.Exit(1)
+        # Test mode: override to CPU only with fp32/fp16
+        if test:
+            selected_targets = ["cpu"]
+            target_precisions = {"cpu": ["fp32", "fp16"]}
+            console.print("[yellow]Test mode: CPU target with fp32/fp16 only[/yellow]")
+        else:
+            selected_targets = _get_targets(category, targets, exclude_targets)
 
-        # Step 3: Determine precisions
-        target_precisions = _get_precisions(selected_targets, precisions)
+            if not selected_targets:
+                console.print(
+                    "[red]Error: No compatible targets found for this model category.[/red]"
+                )
+                raise typer.Exit(1)
+
+            # Step 3: Determine precisions
+            target_precisions = _get_precisions(selected_targets, precisions)
 
         # Count total commands
         total_commands = sum(len(p) for p in target_precisions.values())
