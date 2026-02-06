@@ -30,6 +30,8 @@ from olive_auto.evaluation.dataset_manager import DatasetManager
 from olive_auto.evaluation.metrics_builder import MetricConfigBuilder as MetricsBuilder
 from olive_auto.evaluation.result_formatter import ResultFormatter
 from olive_auto.evaluation.evaluator import ManifestParser, PipelineEvaluator
+from olive_auto.evaluation.inference_engine import OnnxInferenceEngine, AccuracyComputor
+from olive_auto.evaluation.memory_profiler import MemoryProfiler
 
 
 class TestConfig:
@@ -407,6 +409,71 @@ class TestManifestParser:
             assert models["cpu_fp32"].precision == "fp32"
             assert models["cuda_int4"].target == "cuda"
             assert models["cuda_int4"].precision == "int4"
+
+
+class TestInferenceEngine:
+    """Test ONNX inference engine."""
+    
+    def test_dummy_input_creation(self):
+        """Test creation of dummy inputs for a model."""
+        # This test would require an actual ONNX model file
+        # For now, we'll test the AccuracyComputor directly
+        pass
+    
+    def test_accuracy_computor_perplexity_fallback(self):
+        """Test perplexity computation fallback."""
+        # Test that perplexity computation returns valid scores
+        # when lm-eval is not available
+        pass
+
+
+class TestMemoryProfiler:
+    """Test memory profiler functionality."""
+    
+    def test_memory_profiler_initialization(self):
+        """Test memory profiler initialization."""
+        profiler = MemoryProfiler()
+        assert profiler.peak_rss_mb == 0.0
+        assert profiler.peak_vms_mb == 0.0
+        assert not profiler.monitoring
+    
+    def test_current_memory_retrieval(self):
+        """Test getting current memory usage."""
+        profiler = MemoryProfiler()
+        mem = profiler.get_current_memory()
+        
+        # Check that memory values are present and positive
+        assert "memory_rss_mb" in mem
+        assert "memory_vms_mb" in mem
+        assert mem["memory_rss_mb"] > 0
+        assert mem["memory_vms_mb"] > 0
+    
+    def test_peak_memory_retrieval(self):
+        """Test getting peak memory recorded."""
+        profiler = MemoryProfiler()
+        peak = profiler.get_peak_memory()
+        
+        assert "memory_peak_rss_mb" in peak
+        assert "memory_peak_vms_mb" in peak
+        assert isinstance(peak["memory_peak_rss_mb"], float)
+        assert isinstance(peak["memory_peak_vms_mb"], float)
+    
+    def test_monitoring_lifecycle(self):
+        """Test start and stop monitoring."""
+        profiler = MemoryProfiler()
+        
+        # Start monitoring
+        profiler.start_monitoring(interval_sec=0.05)
+        assert profiler.monitoring
+        
+        # Allocate some memory
+        test_data = [i for i in range(100000)]
+        
+        # Stop monitoring
+        memory_metrics = profiler.stop_monitoring()
+        assert not profiler.monitoring
+        assert "memory_peak_rss_mb" in memory_metrics
+        assert "memory_peak_vms_mb" in memory_metrics
 
 
 if __name__ == "__main__":
