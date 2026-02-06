@@ -26,6 +26,7 @@ from olive_auto.targets import TARGET_PRECISION_MATRIX, CATEGORY_TARGET_COMPATIB
 from olive_auto.environment import EnvironmentScriptGenerator
 from olive_auto.command_generator import CommandGenerator
 from olive_auto.executor import PipelineExecutor
+from olive_auto.evaluation_templates import get_evaluation_script_template
 
 # Initialize CLI app
 app = typer.Typer(
@@ -287,6 +288,11 @@ def main(
         )
         progress.update(task_id, completed=True)
 
+        # Generate evaluation script
+        task_id = progress.add_task("Generating evaluation script...", total=None)
+        _generate_evaluation_script(output_dir, model)
+        progress.update(task_id, completed=True)
+
     # Display summary
     _display_summary(output_dir, selected_targets, total_commands, platform)
 
@@ -423,6 +429,33 @@ def _display_summary(
         console.print(f"  cd {output_dir}")
         console.print("  ./setup_environments.sh   # First time only")
         console.print("  ./run_all_optimizations.sh")
+
+
+def _generate_evaluation_script(
+    output_dir: Path,
+    model: str,
+):
+    """Generate auto-generated evaluation script."""
+    from datetime import datetime
+    
+    try:
+        # Get the template
+        script_content = get_evaluation_script_template(
+            timestamp=datetime.now().isoformat(),
+            pipeline_name=str(output_dir.name),
+        )
+        
+        # Write to file
+        script_path = output_dir / "run_evaluation.py"
+        script_path.write_text(script_content)
+        
+        # Make executable on Unix
+        if os.name != 'nt':
+            os.chmod(script_path, 0o755)
+        
+        logger.info(f"Generated evaluation script: {script_path}")
+    except Exception as e:
+        logger.warning(f"Failed to generate evaluation script: {e}")
 
 
 def _generate_manifest(

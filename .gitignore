@@ -166,3 +166,5 @@ cython_debug/
 
 # olive-auto generated pipelines
 olive_auto_pipeline/
+olive_auto/TEST_RESULTS.md
+olive_auto/test-pipeline/
